@@ -7,235 +7,277 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #020617;
+            --bg-color: #030712;
             --sidebar-bg: #0f172a;
-            --accent-color: #38bdf8;
+            --accent-color: #0ea5e9;
             --text-main: #f8fafc;
             --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0; scroll-behavior: smooth; overflow-x: hidden;
         }
 
-        /* Header */
+        .fade-in { opacity: 0; transform: translateY(20px); transition: 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
         header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 5%; background: rgba(2, 6, 23, 0.8);
-            backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000;
-            height: 75px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0 5%; background: rgba(3, 7, 18, 0.9);
+            backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 1000;
+            height: 70px; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .logo-box { font-weight: 900; font-size: 22px; color: var(--accent-color); letter-spacing: 1px; }
-        .header-actions { display: flex; align-items: center; gap: 20px; }
-        .lang-btn { cursor: pointer; font-size: 20px; color: #94a3b8; background: none; border: none; transition: 0.3s; }
-        .lang-btn:hover { color: var(--accent-color); }
+        .menu-toggle { font-size: 24px; cursor: pointer; color: var(--accent-color); }
 
-        /* Sidebar */
+        /* القائمة الجانبية */
         .sidebar {
             position: fixed; top: 0; right: -320px; width: 320px; height: 100%;
             background: var(--sidebar-bg); z-index: 2000; transition: var(--transition);
-            box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+            box-shadow: -20px 0 50px rgba(0,0,0,0.8); display: flex; flex-direction: column;
         }
         .sidebar.open { right: 0; }
-        .sidebar-header { padding: 50px 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        html[dir="ltr"] .sidebar { right: auto; left: -320px; }
+        html[dir="ltr"] .sidebar.open { left: 0; }
+
+        /* زر إغلاق القائمة الجانبية X */
+        .close-sidebar {
+            position: absolute; top: 20px; left: 20px;
+            font-size: 24px; color: #94a3b8; cursor: pointer; transition: 0.3s;
+        }
+        .close-sidebar:hover { color: #ef4444; transform: rotate(90deg); }
+        html[dir="ltr"] .close-sidebar { left: auto; right: 20px; }
+        
+        .sidebar-header { padding: 50px 30px 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-links { flex-grow: 1; padding: 20px 0; }
         .sidebar-links a {
-            display: flex; align-items: center; padding: 18px 30px; color: #94a3b8;
-            text-decoration: none; transition: 0.3s; gap: 15px; font-size: 16px;
+            display: flex; align-items: center; padding: 15px 30px; color: #94a3b8;
+            text-decoration: none; transition: 0.3s; gap: 15px;
         }
-        .sidebar-links a:hover { background: rgba(56, 189, 248, 0.1); color: var(--accent-color); }
+        .sidebar-links a:hover { background: rgba(14, 165, 233, 0.1); color: var(--accent-color); }
 
-        /* Hero Section */
-        .hero { text-align: center; padding: 100px 5% 60px; }
-        .hero h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin: 0; background: linear-gradient(to right, #fff, var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero p { color: #94a3b8; font-size: 1.2rem; max-width: 600px; margin: 20px auto; }
-
-        /* Grid */
-        .projects-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px; padding: 0 10% 80px;
+        .sidebar-socials {
+            padding: 30px; border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: center; gap: 25px; background: #0b1120;
         }
+        .side-social-icon { font-size: 22px; color: #94a3b8; transition: 0.3s; }
+        .side-social-icon:hover { color: var(--accent-color); transform: translateY(-5px); }
 
+        .btn-reg {
+            background: var(--accent-color); border: none; padding: 10px 22px;
+            border-radius: 12px; cursor: pointer; font-weight: bold; color: #000; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+        }
+        .btn-reg:hover { transform: scale(1.05); background: #38bdf8; }
+
+        section { padding: 80px 10%; }
+        .hero { text-align: center; padding-top: 120px; }
+        .hero h1 { font-size: 3.8rem; color: var(--accent-color); margin-bottom: 10px; font-weight: 800; }
+        .hero p { color: #94a3b8; font-size: 1.2rem; max-width: 600px; margin: 0 auto; }
+
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
         .card {
-            background: #1e293b60; border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px; overflow: hidden; transition: 0.4s; cursor: pointer;
-            position: relative; height: 380px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px; overflow: hidden; transition: 0.4s; cursor: pointer; position: relative;
         }
-        .card:hover { transform: translateY(-10px); border-color: var(--accent-color); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-
-        .img-box { height: 280px; width: 100%; background: #0f172a; overflow: hidden; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .card:hover .img-box img { scale: 1.05; }
-
+        .card:hover { border-color: var(--accent-color); transform: translateY(-10px); }
+        
+        .img-box { height: 220px; background-size: cover; background-position: center; transition: 0.6s; }
+        .card:hover .img-box { transform: scale(1.1); }
+        
         .users-badge {
             position: absolute; top: 15px; right: 15px;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
-            padding: 6px 14px; border-radius: 30px; font-size: 12px;
-            color: #fff; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; gap: 8px; z-index: 2;
+            background: rgba(0, 0, 0, 0.75); padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; color: #fff; display: flex; align-items: center; gap: 6px; backdrop-filter: blur(5px);
         }
-        html[dir="ltr"] .users-badge { right: auto; left: 15px; }
 
-        .card-info { padding: 20px; text-align: center; }
-        .card-info h3 { margin: 0; font-size: 18px; color: var(--text-main); }
+        .feedback-input {
+            width: 100%; padding: 18px; margin-top: 15px; border-radius: 15px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: white; box-sizing: border-box; font-size: 16px; transition: 0.3s;
+        }
+        .feedback-input:focus { border-color: var(--accent-color); outline: none; background: rgba(255,255,255,0.08); }
 
-        /* Modal */
+        /* Modal Styles */
         .modal {
             display: none; position: fixed; z-index: 3000; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(10px); align-items: center; justify-content: center;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px);
+            align-items: center; justify-content: center;
         }
         .modal-box {
-            background: #111827; padding: 30px; border-radius: 30px;
-            width: 90%; max-width: 450px; text-align: center;
-            border: 1px solid rgba(56, 189, 248, 0.2); position: relative;
+            background: #0f172a; padding: 45px 35px; border-radius: 25px; width: 90%; max-width: 420px;
+            text-align: center; border: 1px solid rgba(14, 165, 233, 0.3); position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
         }
-        .close-btn { position: absolute; top: 20px; left: 20px; color: #fff; cursor: pointer; font-size: 24px; }
-        html[dir="ltr"] .close-btn { left: auto; right: 20px; }
+        .close-icon { position: absolute; top: 20px; left: 20px; cursor: pointer; color: #64748b; font-size: 20px; transition: 0.3s; }
+        .close-icon:hover { color: #ef4444; }
+        html[dir="ltr"] .close-icon { left: auto; right: 20px; }
 
-        .choice-btn {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 15px;
-            text-decoration: none; font-weight: bold; border: none; transition: 0.3s;
-        }
-        .btn-wa { background: #22c55e; color: white; }
-        .btn-view { background: #38bdf8; color: #000; }
-
-        .feedback-section { margin-top: 25px; border-top: 1px solid #ffffff10; padding-top: 20px; }
-        .feedback-input {
-            width: 100%; padding: 15px; border-radius: 12px; background: #1f2937;
-            border: 1px solid #374151; color: white; resize: none; box-sizing: border-box;
-        }
-        .btn-send { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        .btn-send:hover { background: var(--accent-color); color: #000; }
-
-        #fullImgModal img { max-width: 95%; max-height: 85%; border-radius: 15px; border: 1px solid var(--accent-color); }
+        .catchy-text { color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 25px; }
 
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo-box">SEIF BADAWI</div>
-    <div class="header-actions">
-        <button class="lang-btn" onclick="toggleLanguage()"><i class="fas fa-globe"></i></button>
-        <div onclick="toggleSidebar()" style="cursor:pointer; color:var(--accent-color); font-size: 22px;"><i class="fas fa-bars-staggered"></i></div>
+    <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars-staggered"></i></div>
+    <div class="header-actions" style="display:flex; gap:18px; align-items:center;">
+        <button class="lang-btn" onclick="toggleLanguage()" title="Change Language" style="font-size: 22px; background: none; border: none; color: white; cursor: pointer; transition: 0.3s;">
+            <i class="fas fa-globe-americas"></i>
+        </button>
+        <button class="btn-reg" onclick="openModal('regModal')">التسجيل</button>
     </div>
 </header>
 
 <div class="sidebar" id="sidebar">
+    <i class="fas fa-times close-sidebar" onclick="toggleSidebar()"></i>
+    
     <div class="sidebar-header">
-        <div style="width: 60px; height: 60px; border: 2px solid var(--accent-color); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 20px;">SB</div>
-        <h2 style="margin-top:15px; font-size:18px;">SEIF BADAWI</h2>
+        <div style="width: 65px; height: 65px; border: 2px solid var(--accent-color); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-weight: bold; font-size: 20px;">SB</div>
+        <h3 style="margin-top: 15px;">SEIF BADAWI</h3>
+        <p id="sideJob" style="color: #64748b; font-size: 14px;">جرافيك ديزاينر</p>
     </div>
+    
     <div class="sidebar-links">
-        <a href="#" onclick="toggleSidebar()"><i class="fas fa-home"></i> <span class="lang-text" data-ar="الرئيسية" data-en="Home">الرئيسية</span></a>
-        <a href="#portfolio" onclick="toggleSidebar()"><i class="fas fa-layer-group"></i> <span class="lang-text" data-ar="معرض الأعمال" data-en="Portfolio">معرض الأعمال</span></a>
+        <a href="#home" onclick="toggleSidebar()"><i class="fas fa-home"></i> <span class="lang-text" data-ar="الرئيسية" data-en="Home">الرئيسية</span></a>
+        <a href="#projects" onclick="toggleSidebar()"><i class="fas fa-briefcase"></i> <span class="lang-text" data-ar="أعمالي" data-en="My Work">أعمالي</span></a>
+        <a href="#feedback" onclick="toggleSidebar()"><i class="fas fa-star"></i> <span class="lang-text" data-ar="قيمنا" data-en="Rate Us">قيمنا</span></a>
+    </div>
+
+    <div class="sidebar-socials">
+        <a href="https://www.facebook.com/share/1FLqti9mNP/" class="side-social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/so00ofaa?igsh=MWplejk5Mm9xdjNneA==" class="side-social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://wa.me/201200819703" class="side-social-icon" target="_blank"><i class="fab fa-whatsapp"></i></a>
     </div>
 </div>
 
-<div class="hero">
-    <h1 id="heroTitle">عالم من الإبداع</h1>
-    <p id="heroDesc">أصمم هويات بصرية تعكس احترافية عملك وتخطف الأنظار.</p>
-</div>
+<section id="home" class="hero fade-in">
+    <h1 id="heroTitle">تصميم يترك أثراً</h1>
+    <p id="heroDesc">نحول الخيال إلى واقع بصري يبني هوية علامتك التجارية بقوة واحترافية.</p>
+</section>
 
-<div class="projects-grid" id="grid">
+<section id="projects" class="fade-in">
+    <h2 class="lang-text" data-ar="أحدث الأعمال" data-en="Latest Work" style="text-align: center; margin-bottom: 50px; font-size: 2rem;">أحدث الأعمال</h2>
+    <div class="projects-grid" id="grid"></div>
+</section>
+
+<section id="feedback" class="fade-in" style="background: #0b1120; text-align: center; border-radius: 40px;">
+    <h2 class="lang-text" data-ar="رأيك يهمنا" data-en="Your Feedback">رأيك يهمنا</h2>
+    <div style="max-width: 550px; margin: 0 auto;">
+        <textarea id="feedbackInput" class="feedback-input" rows="4" placeholder="اكتب رأيك هنا..."></textarea>
+        <button class="btn-reg" onclick="sendFeedback()" style="width: 100%; padding: 16px; margin-top: 20px; font-size: 17px;">إرسال التقييم</button>
     </div>
+</section>
 
-<footer style="text-align: center; padding: 50px; color: #475569; font-size: 14px; border-top: 1px solid #ffffff05;">
-    © 2026 SEIF BADAWI Portfolio
+<footer style="text-align: center; padding: 50px; background: #020617; color: #475569; font-size: 14px;">
+    <p>© 2026 SEIF BADAWI. Created with Passion.</p>
 </footer>
 
-<div class="modal" id="optionsModal">
+<div class="modal" id="regModal">
     <div class="modal-box">
-        <div class="close-btn" onclick="closeModals()">&times;</div>
-        <h3 id="modalTitle" style="color:#fff; margin-bottom:20px;">اسم المشروع</h3>
-        
-        <a href="https://wa.me/201200819703" class="choice-btn btn-wa"><i class="fab fa-whatsapp"></i> <span class="lang-text" data-ar="طلب تصميم مشابه" data-en="Request Similar Design">طلب تصميم مشابه</span></a>
-        <button class="choice-btn btn-view" onclick="openFullImage()"><i class="fas fa-expand-alt"></i> <span class="lang-text" data-ar="عرض الصورة كاملة" data-en="View Full Image">عرض الصورة كاملة</span></button>
-
-        <div class="feedback-section">
-            <textarea id="feedbackMsg" class="feedback-input" rows="3" placeholder="اكتب رأيك أو نصيحتك هنا..."></textarea>
-            <button class="btn-send" onclick="sendFeedback()"><i class="fas fa-paper-plane"></i> <span class="lang-text" data-ar="إرسال النصيحة" data-en="Send Feedback">إرسال النصيحة</span></button>
-        </div>
+        <i class="fas fa-times close-icon" onclick="closeModals()"></i>
+        <h2 style="margin-bottom: 25px;">دخول المصمم</h2>
+        <input type="email" class="feedback-input" style="margin-top:0" placeholder="البريد الإلكتروني">
+        <input type="password" class="feedback-input" placeholder="كلمة المرور">
+        <button class="btn-reg" style="width: 100%; margin-top: 25px;">دخول</button>
     </div>
 </div>
 
-<div class="modal" id="fullImgModal" onclick="closeModals()">
-    <img src="" id="targetFullImg">
+<div class="modal" id="projectOptionsModal">
+    <div class="modal-box">
+        <i class="fas fa-times close-icon" onclick="closeModals()"></i>
+        <h3 id="modalProjectTitle" style="color:var(--accent-color); margin-bottom: 15px; font-size: 1.5rem;">اسم المشروع</h3>
+        
+        <p class="catchy-text" id="catchyText">هذا العمل تم تنفيذه بدقة متناهية ليعكس هوية فريدة. هل ترغب في تمييز مشروعك بتصميم مشابه؟ نحن هنا لتحويل رؤيتك إلى واقع.</p>
+        
+        <a href="https://wa.me/201200819703" class="btn-reg" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; background:#25D366; color:white;">
+            <i class="fab fa-whatsapp" style="font-size: 20px;"></i> 
+            <span class="lang-text" data-ar="اطلب تصميمك الآن" data-en="Order Your Design">اطلب تصميمك الآن</span>
+        </a>
+    </div>
 </div>
 
 <script>
     let currentLang = 'ar';
-    let activeImageUrl = '';
-
-    // مصفوفة المشاريع بناءً على صورك الستة
-    const myProjects = [
-        { nameAr: "عالم الموشن جرافيك", nameEn: "Motion Graphics World", users: 154, url: "ضع_رابط_الصورة_الأولى_هنا" },
-        { nameAr: "تصاميم تيشرتات إبداعية", nameEn: "Apparel & T-shirt Design", users: 89, url: "ضع_رابط_الصورة_الثانية_هنا" },
-        { nameAr: "هوية مطاعم وكافيهات", nameEn: "Restaurant Branding", users: 120, url: "ضع_رابط_الصورة_الثالثة_هنا" },
-        { nameAr: "تصميم أغلفة المجلات", nameEn: "Magazine Cover Design", users: 67, url: "ضع_رابط_الصورة_الرابعة_هنا" },
-        { nameAr: "لوجوهات قطاع الأغذية", nameEn: "Food Industry Logos", users: 210, url: "ضع_رابط_الصورة_الخامسة_هنا" },
-        { nameAr: "هوية بصرية ورسوم توضيحية", nameEn: "Visual Identity & Illustrations", users: 95, url: "ضع_رابط_الصورة_السادسة_هنا" }
+    const projects = [
+        { ar: "هوية بصرية متكاملة", en: "Full Brand Identity", users: 150, img: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?w=800" },
+        { ar: "تصميم شعار ملابس عصري", en: "Modern Apparel Logo", users: 85, img: "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=800" },
+        { ar: "بوستر بطولة ألعاب احترافي", en: "Pro Gaming Poster", users: 210, img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800" },
+        { ar: "تصميم حملة سوشيال ميديا", en: "Social Media Campaign", users: 120, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800" }
     ];
 
-    function render() {
+    function renderProjects() {
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
-        myProjects.forEach((p, i) => {
-            const name = currentLang === 'ar' ? p.nameAr : p.nameEn;
-            const userTxt = currentLang === 'ar' ? 'مستخدم' : 'Users';
+        projects.forEach(p => {
+            const title = currentLang === 'ar' ? p.ar : p.en;
             grid.innerHTML += `
-                <div class="card" onclick="openOptions('${name}', '${p.url}')">
-                    <div class="users-badge"><i class="fas fa-users"></i> +${p.users} ${userTxt}</div>
-                    <div class="img-box"><img src="${p.url}" alt="${name}"></div>
-                    <div class="card-info"><h3>${name}</h3></div>
+                <div class="card fade-in" onclick="openProjectOptions('${title}')">
+                    <div class="users-badge"><i class="fas fa-users"></i> +${p.users}</div>
+                    <div class="img-box" style="background-image: url('${p.img}');"></div>
+                    <div style="padding:22px; text-align:center; font-weight:600; font-size: 17px;">${title}</div>
                 </div>
             `;
         });
+        checkScroll();
     }
-
-    function openOptions(name, url) {
-        document.getElementById('modalTitle').innerText = name;
-        activeImageUrl = url;
-        document.getElementById('feedbackMsg').value = '';
-        document.getElementById('optionsModal').style.display = 'flex';
-    }
-
-    function openFullImage() {
-        document.getElementById('optionsModal').style.display = 'none';
-        document.getElementById('targetFullImg').src = activeImageUrl;
-        document.getElementById('fullImgModal').style.display = 'flex';
-    }
-
-    function sendFeedback() {
-        const msg = document.getElementById('feedbackMsg').value;
-        const project = document.getElementById('modalTitle').innerText;
-        if(!msg) return;
-        window.open(`https://wa.me/201200819703?text=نصيحة بخصوص مشروع ${project}: %0a${msg}`);
-    }
-
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
     function toggleLanguage() {
         currentLang = currentLang === 'ar' ? 'en' : 'ar';
-        const html = document.getElementById('htmlTag');
-        html.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.getElementById('htmlTag').setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
         
-        document.getElementById('heroTitle').innerText = currentLang === 'ar' ? 'عالم من الإبداع' : 'World of Creativity';
-        document.getElementById('heroDesc').innerText = currentLang === 'ar' ? 'أصمم هويات بصرية تعكس احترافية عملك وتخطف الأنظار.' : 'I design visual identities that reflect your professionalism.';
-        
-        document.querySelectorAll('.lang-text').forEach(el => {
-            el.innerText = el.getAttribute(`data-${currentLang}`);
-        });
-        render();
+        const content = {
+            ar: {
+                heroT: "تصميم يترك أثراً", heroD: "نحول الخيال إلى واقع بصري يبني هوية علامتك التجارية بقوة واحترافية.",
+                catchy: "هذا العمل تم تنفيذه بدقة متناهية ليعكس هوية فريدة. هل ترغب في تمييز مشروعك بتصميم مشابه؟ نحن هنا لتحويل رؤيتك إلى واقع."
+            },
+            en: {
+                heroT: "Design That Lasts", heroD: "We turn imagination into a visual reality that builds your brand identity with power.",
+                catchy: "This project was crafted with precision to reflect a unique identity. Want to elevate your brand with something similar? We're here to make it happen."
+            }
+        };
+
+        document.getElementById('heroTitle').innerText = content[currentLang].heroT;
+        document.getElementById('heroDesc').innerText = content[currentLang].heroD;
+        document.getElementById('catchyText').innerText = content[currentLang].catchy;
+
+        document.querySelectorAll('.lang-text').forEach(el => el.innerText = el.getAttribute(`data-${currentLang}`));
+        renderProjects();
     }
 
-    render();
+    function checkScroll() {
+        document.querySelectorAll('.fade-in').forEach(el => {
+            if (el.getBoundingClientRect().top < window.innerHeight * 0.9) el.classList.add('visible');
+        });
+    }
+
+    window.addEventListener('scroll', checkScroll);
+    window.onload = renderProjects;
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    
+    function openProjectOptions(name) {
+        document.getElementById('modalProjectTitle').innerText = name;
+        openModal('projectOptionsModal');
+    }
+
+    function sendFeedback() {
+        const text = document.getElementById('feedbackInput').value;
+        if(!text) return alert(currentLang === 'ar' ? "يرجى كتابة رأيك أولاً" : "Please write your feedback first");
+        window.open(`https://wa.me/201200819703?text=${encodeURIComponent("تقييم من الموقع: " + text)}`, '_blank');
+        document.getElementById('feedbackInput').value = '';
+    }
+
+    // إغلاق المودال عند الضغط خارج المربع
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') closeModals();
+    }
 </script>
 
 </body>
